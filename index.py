@@ -10,6 +10,16 @@ def getEstatisticas(pais):
   jsonData = response.json()
   return jsonData["response"][0]
 
+def getEstatisticasTodosPaises():
+  url = "https://covid-193.p.rapidapi.com/statistics"
+  headers = {
+    'x-rapidapi-host': "covid-193.p.rapidapi.com",
+    'x-rapidapi-key': "BF3VktHr4RmshMmOUbrOu2PrFhRgp1FUfeNjsnWVqJzqUF7I5j"
+  }
+  response = requests.request("GET", url, headers=headers)
+  jsonData = response.json()
+  return jsonData["response"]
+
 def getPaises():
   url = "https://covid-193.p.rapidapi.com/countries"
   headers = {
@@ -19,6 +29,47 @@ def getPaises():
   response = requests.request("GET", url, headers=headers)
   jsonData = response.json()
   return jsonData["response"]
+
+def printEstatisticasTodosPaises():
+  estatistica = getEstatisticasTodosPaises()
+
+  estatisticasFormatada = []
+
+  for index in range(len(estatistica)):
+    estatisticasFormatada.append({
+      "numero": index,
+      "continent": estatistica[index]["continent"],
+      "country": estatistica[index]["country"],
+      "population": estatistica[index]["population"],
+      "caseNew": estatistica[index]["cases"]["new"],
+      "caseActive": estatistica[index]["cases"]["active"],
+      "caseCritical": estatistica[index]["cases"]["critical"],
+      "caseRecovered": estatistica[index]["cases"]["recovered"],
+      "caseTotal": estatistica[index]["cases"]["total"],
+      "deathsNew": estatistica[index]["deaths"]["new"],
+      "deathsTotal": estatistica[index]["deaths"]["total"],
+      "testTotal": estatistica[index]["tests"]["total"],
+      "time": estatistica[index]["time"]
+    })
+  
+  for pais in estatisticasFormatada:
+    print('-> Nº:.............', pais["numero"])
+    print('-> Continente:.....', pais["continent"])
+    print('-> País:...........', pais["country"])
+    print('-> População:......', pais["population"], ' Habitantes')
+    print('-> Casos:          ')
+    print('   -> Novos:.......', pais["caseNew"])
+    print('   -> Ativos:......', pais["caseActive"])
+    print('   -> Críticos:....', pais["caseCritical"])
+    print('   -> Recuperados:.', pais["caseRecovered"])
+    print('   -> Total:.......', pais["caseTotal"])
+    print('-> Mortes:     ')
+    print('   -> Novos:.......', pais["deathsNew"])
+    print('   -> Total:.......', pais["deathsTotal"])
+    print('-> Testes:         ')
+    print('   -> Total:.......', pais["testTotal"])
+    print('-> Data:...........', pais["time"])
+    print('\n___________________________\n\n')
 
 def printEstatisticas(pais):
   estatistica = getEstatisticas(pais)
@@ -99,7 +150,7 @@ def salvarInfoTxt(pais):
 def menuRecursivo(menu1):
  
   # Menu de opções
-  print('Seja bem vindo ao nosso sistema de contagem de casos, escolha a opção desejada', '''\n[1] Paises \n[2] Estatistica \n[3] Salvar estatistica \n[4] Fechar programa''')
+  print('Seja bem vindo ao nosso sistema de contagem de casos, escolha a opção desejada', '''\n[1] Paises \n[2] Estatistica por país \n[3] Salvar estatistica \n[4] Estatistica de todos países \n[5] Fechar programa''')
 
   # Caso o input seja algo diferente de um inteiro o valor será 0
   try: menu1 = int(input("Qual a sua escolha?"))
@@ -121,9 +172,14 @@ def menuRecursivo(menu1):
       os.system('cls' if os.name == 'nt' else 'clear')
       salvarInfoTxt(input("Qual o seu país?"))
       menuRecursivo(0)
+      
+    elif menu1 == 4:
+      os.system('cls' if os.name == 'nt' else 'clear')
+      printEstatisticasTodosPaises()
+      menuRecursivo(0)
 
     # Condição de parada
-    elif menu1 == 4:
+    elif menu1 == 5:
       print("Consulta finalizada com sucesso, volte sempre.")
     
     else:
