@@ -1,4 +1,4 @@
-import json, requests
+import json, requests, codecs, os
 
 def getEstatisticas(pais):
   url = "https://covid-193.p.rapidapi.com/statistics?country="+pais
@@ -23,7 +23,7 @@ def getPaises():
 def printEstatisticas(pais):
   estatistica = getEstatisticas(pais)
 
-  print('\n\n\n\n\n\n__________________________________\n')
+  print('\n__________________________________\n')
   print('-> Continente:.....', estatistica["continent"])
   print('-> País:...........', estatistica["country"])
   print('-> População:......', estatistica["population"], ' Habitantes')
@@ -39,16 +39,16 @@ def printEstatisticas(pais):
   print('-> Testes:         ')
   print('   -> Total:.......', estatistica["tests"]["total"])
   print('-> Data:...........', estatistica["time"])
-  print('\n__________________________________\n\n\n\n\n\n')
+  print('\n__________________________________\n')
 
 def printPaises():
   paises = getPaises()
 
-  print('\n\n\n\n\n\n__________________________________\n')
+  print('\n__________________________________\n')
   for pais in paises:
     print(pais)
     
-  print('\n__________________________________\n\n\n\n\n\n')
+  print('\n__________________________________\n')
 
 def salvarInfoTxt(pais):
 
@@ -68,39 +68,74 @@ def salvarInfoTxt(pais):
   casosTotal = estatistica["cases"]["total"]
 
   # Informações de morte
-  mortesNovos = estatistica["deaths"]["new"])
-  mortesTotal = estatistica["deaths"]["total"])
+  mortesNovos = estatistica["deaths"]["new"]
+  mortesTotal = estatistica["deaths"]["total"]
 
   # Informações de testes
-  testesTotal = estatistica["tests"]["total"])
+  testesTotal = estatistica["tests"]["total"]
 
   # Informação da data
-  data = estatistica["time"])
+  data = estatistica["time"]
 
-  # Aqui vai fazer a lógica para imprimir em um txt
+  # Imprimindo a estatistica de um determinado país
+  # no arquivo txt
+  with codecs.open(f'{pais}.txt', "w", "utf-8-sig") as temp:
+    temp.write(f'Dados COVID-19 {data}\n')
+    temp.write(f'├── Continente: {continente}\n')
+    temp.write(f'├── Pais: {pais}\n')
+    temp.write(f'├── Populacao: {populacao}\n')
+    temp.write(f'├── Casos\n')
+    temp.write(f'│   ├── Novos casos: {casosNovos}\n')
+    temp.write(f'│   ├── Casos Ativos: {casosAtivos}\n')
+    temp.write(f'│   ├── Casos criticos: {casosCriticos}\n')
+    temp.write(f'│   ├── Casos recuperados: {casosRecuperados}\n')
+    temp.write(f'│   └── Total: {casosTotal}\n')
+    temp.write(f'├── Mortes\n')
+    temp.write(f'│   ├── Novas mortes: {mortesNovos}\n')
+    temp.write(f'│   └── Total: {mortesTotal}\n')
+    temp.write(f'└── Testes\n')
+    temp.write(f'    └── Total: {testesTotal}\n')
+
+def menuRecursivo(menu1):
+ 
+  # Menu de opções
+  print('Seja bem vindo ao nosso sistema de contagem de casos, escolha a opção desejada', '''\n[1] Paises \n[2] Estatistica \n[3] Salvar estatistica \n[4] Fechar programa''')
+
+  # Caso o input seja algo diferente de um inteiro o valor será 0
+  try: menu1 = int(input("Qual a sua escolha?"))
+  except: menu1 = 0
+
+  # Caso ocorra algum erro
+  try:
+    if menu1 == 1:
+      os.system('cls' if os.name == 'nt' else 'clear')
+      printPaises()
+      menuRecursivo(0)
+      
+    elif menu1 == 2:
+      os.system('cls' if os.name == 'nt' else 'clear')
+      printEstatisticas(input("Qual o seu país?"))
+      menuRecursivo(0)
+      
+    elif menu1 == 3:
+      os.system('cls' if os.name == 'nt' else 'clear')
+      salvarInfoTxt(input("Qual o seu país?"))
+      menuRecursivo(0)
+
+    # Condição de parada
+    elif menu1 == 4:
+      print("Consulta finalizada com sucesso, volte sempre.")
+    
+    else:
+      # Limpando o console
+      os.system('cls' if os.name == 'nt' else 'clear')
+      menuRecursivo(0)
+  except:
+    print("Ocorreu algum erro, tente novamente")
+    menuRecursivo(0)
 
 def init():
-  printEstatisticas("brazil")
-  printPaises()
-
-  # Aqui vai ter o menu
-  # Ele sempre vai está rodando, vai ser apresentado as opções
-  # para o usuário. Elas são:
-  # 1. Ver paises (vai imprimir paises)
-  # 2. Ver estatistica de um pais (vai peguntar qual pais é e imprimir)
-  # 3. Salvar estatisticas de um pais no arquivo txt (vai perguntar qual pais)
-  # 4. Sair (Se o usuário quiser sair vai fechar o programa)
-
-  # A dica é usar uma variavel de parada, se ele for True é pq o programa
-  # precisa continuar rodando, caso não o programa fecha
-  # Para isso o While vai ser util, sua condição é a variavel de parada 
-  # é a variavel de parada.
-
-# Iniciando a função
+  menuRecursivo(0)
+  
+# Iniciando o programa
 init()
-
-
-
-
-
-# print(response.text)
